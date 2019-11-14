@@ -4,16 +4,17 @@ Spotify based demo
 
 ## Getting Started
 
-Create a Spotify account and enable the [developer option](https://developer.spotify.com), then create a project and take the Client Id and Secret Id and generate a Ouath token like this:
+Create a Spotify account and enable the [developer option](https://developer.spotify.com), then create a project and take the Client Id and Secret Id and generate a token like this:
 
 **POST** Request to: https://accounts.spotify.com/api/token
 
 ##Body: 
+
 As a x-www-form-urlencoded 
 `grant_type: client_credentials`
 
 ## Authorization
-Basic client_id:secret_id
+`Basic client_id:secret_id`
 
 ## Response
 

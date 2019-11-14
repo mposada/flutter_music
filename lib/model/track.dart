@@ -20,7 +20,7 @@ class Track {
       uri: map["uri"],
       durationMs: map["duration_ms"],
       previewUrl: map["preview_url"] ?? "",
-      albums: Album.fromJson(map["album"]),
+      albums: map["album"] != null ? Album.fromJson(map["album"]) : Album(),
       artists: Artist.fromList(map["artists"]),
     );
   }
@@ -29,7 +29,7 @@ class Track {
     List<dynamic> items = map["items"];
     List<Track> tracks = <Track>[];
     for (Map<String, dynamic> item in items) {
-      Map<String, dynamic> track = item["track"];
+      Map<String, dynamic> track = item.containsKey("track") ? item["track"] : item;
       tracks.add(Track.fromJson(track));
     }
     return tracks;

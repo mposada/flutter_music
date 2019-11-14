@@ -8,6 +8,11 @@ import 'package:workshop/music_repository.dart';
 import 'package:workshop/ui/widgets/track_item.dart';
 
 class TracksRoute extends StatefulWidget {
+
+  List<Track> albumTracks;
+
+  TracksRoute({this.albumTracks});
+
   @override
   State<StatefulWidget> createState() => TracksState();
 }
@@ -26,13 +31,17 @@ class TracksState extends State<TracksRoute> {
   void initState() {
     super.initState();
 
-    MusicRepository.getTracks().then((response) {
-      if (response is List<Track>) {
-        setState(() => _tracks.addAll(response));
-      } else {
-        setState(() => _errorMessage = response);
-      }
-    });
+    if (widget.albumTracks == null) {
+      MusicRepository.getTracks().then((response) {
+        if (response is List<Track>) {
+          setState(() => _tracks.addAll(response));
+        } else {
+          setState(() => _errorMessage = response);
+        }
+      });
+    } else {
+      setState(() => _tracks.addAll(widget.albumTracks));
+    }
 
   }
 
@@ -46,27 +55,28 @@ class TracksState extends State<TracksRoute> {
             itemCount: _tracks.length,
             itemBuilder: (BuildContext context, int index) {
               return GestureDetector(
-                  onTap: () => _playSong(index),
+                  onTap: () => _tracks[index].previewUrl.isNotEmpty ? _playSong(index) : _noPreviewUrl(),
                   child: TrackItem(track: _tracks[index])
               );
             }
         ): Center(child: CircularProgressIndicator()),
       ),
-      _selectedTrack != null ? playerWidget() : Container()
+      _selectedTrack != null ? Align(alignment: Alignment(0.0, 1.0),
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 500),
+          color: Colors.white,
+          width: double.infinity,
+          height: _controlsContainerHeight,
+          curve: Curves.fastOutSlowIn,
+          child: playerWidget()
+        )
+      ) : Container()
     ]) :
     Center(child: Text(_errorMessage));
   }
 
   Widget playerWidget() {
-    return Align(
-      alignment: Alignment(0.0, 1.0),
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 500),
-        color: Colors.white,
-        width: double.infinity,
-        height: _controlsContainerHeight,
-        curve: Curves.fastOutSlowIn,
-        child: Column(
+    return Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             LinearProgressIndicator(
@@ -77,13 +87,13 @@ class TracksState extends State<TracksRoute> {
             Row(
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
-                Padding(
+                _selectedTrack.albums.id != null ? Padding(
                   padding: EdgeInsets.only(left: 16.0, top: 7.0),
                   child: ClipRRect(
                     child: Image.network(_selectedTrack.albums.images.first.url, width: 45.0, height: 45.0,),
                     borderRadius: BorderRadius.all(Radius.circular(6.0)),
                   ),
-                ),
+                ) : Container(),
                 Expanded(
                   flex: 4,
                   child: Container(
@@ -120,9 +130,7 @@ class TracksState extends State<TracksRoute> {
               ]
             ),
           ],
-        ),
-      ),
-    );
+        );
   }
 
   void _playSong(int index) async {
@@ -138,6 +146,29 @@ class TracksState extends State<TracksRoute> {
         setState(() => _audioPosition = position.inMilliseconds / 30000);
       });
     }
+  }
+
+  void _noPreviewUrl() {
+    setState(() {
+      _controlsContainerHeight = 0.0;
+      _isPlaying = false;
+    });
+
+    showDialog(context: context, builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text("Ups"),
+        content: Text("This song doesn't have a preview track"),
+        actions: <Widget>[
+          RaisedButton(
+            color: Colors.white,
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text("OK", style: TextStyle(color: Colors.black)),
+          )
+        ],
+      );
+    });
   }
 
   void _pauseOrResume() async {

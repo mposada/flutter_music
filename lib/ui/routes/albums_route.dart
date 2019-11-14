@@ -3,7 +3,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:workshop/model/album.dart';
+import 'package:workshop/model/track.dart';
 import 'package:workshop/music_repository.dart';
+import 'package:workshop/ui/routes/album_tracks_route.dart';
 import 'package:workshop/ui/widgets/album_item.dart';
 
 class AlbumsRoute extends StatefulWidget {
@@ -48,7 +50,21 @@ class AlbumsState extends State<AlbumsRoute> {
               childAspectRatio: aspectRatio,
             ),
             itemBuilder: (context, position) {
-              return AlbumItem(album: _albums[position]);
+              return GestureDetector(
+                onTap: () async {
+                  var tracks = await MusicRepository.getAlbumTracks(albumId: _albums[position].id);
+                  if (tracks is List<Track>) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AlbumTracksRoute(tracks: tracks, album: _albums[position])),
+                    );
+                  } else {
+
+                  }
+                },
+                child: AlbumItem(album: _albums[position])
+              );
             }
         ) : Center(child: CircularProgressIndicator())
     ) : Center(child: Text(_errorMessage));

@@ -11,7 +11,7 @@ class MusicRepository {
   static final String tracks = "artists/{artist}/top-tracks?country=CO";
   static final String partyTracks = "playlists/37i9dQZF1DX1TEroFz7Oja/tracks";
   static final String postMalone = "246dkjvS1zLTtiykXe5h60";
-  static final String token = "Bearer BQCB-08kjD0m45Ss6qcjZkhfe2HRA2oCzWVbeCLqvsd4TyS5aWdYmqsDgOOUhLeMNJdVr2aID8LwWAknEeM";
+  static final String token = "Bearer BQDWHtwrIFJ2nzAoXpXBhDGSF7qiKWR0sqZv1gi3My7_yS2BtZz4mopvptz3roa9JL3-r_ggh-LBoxx-wXA";
 
   static Future<dynamic> getAlbums() async {
     final response = await client.get("$baseUrl/$browse",
@@ -26,6 +26,17 @@ class MusicRepository {
 
   static Future<dynamic> getTracks({String artistId}) async {
     final url = artistId == null ? "$baseUrl/$partyTracks" : "$baseUrl/${tracks.replaceAll("{artist}", artistId)}";
+    final response = await client.get(url, headers: { "Authorization": token });
+    Map<String, dynamic> map = convert.jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      return Track.fromList(map);
+    } else {
+      return getErrorMessage(map);
+    }
+  }
+
+  static Future<dynamic> getAlbumTracks({String albumId}) async {
+    final url = "$baseUrl/albums/$albumId/tracks";
     final response = await client.get(url, headers: { "Authorization": token });
     Map<String, dynamic> map = convert.jsonDecode(response.body);
     if (response.statusCode == 200) {

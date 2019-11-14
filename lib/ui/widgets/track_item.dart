@@ -21,7 +21,7 @@ class TrackItem extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          Expanded(
+          track.albums.id != null ? Expanded(
             flex: 1,
             child: AlbumImageWidget(
               width: 60.0,
@@ -29,7 +29,7 @@ class TrackItem extends StatelessWidget {
               margins: EdgeInsets.only(right: 16.0),
               assetUrl: track.albums.images[1].url,
             )
-          ),
+          ) : Container(),
           Expanded(
             flex: 3,
             child: Column(

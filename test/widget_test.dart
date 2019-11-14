@@ -14,4 +14,9 @@ void main() {
     final tracks = await MusicRepository.getTracks();
     expect(tracks, isInstanceOf<List<Track>>());
   });
+
+  test("album tracks endpoint", () async {
+    final tracks = await MusicRepository.getAlbumTracks(albumId: "0cm9LOQUBK3JUgyoRj238z");
+    expect(tracks, isInstanceOf<List<Track>>());
+  });
 }

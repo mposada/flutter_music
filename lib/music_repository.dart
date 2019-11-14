@@ -11,7 +11,7 @@ class MusicRepository {
   static final String tracks = "artists/{artist}/top-tracks?country=CO";
   static final String partyTracks = "playlists/37i9dQZF1DX1TEroFz7Oja/tracks";
   static final String postMalone = "246dkjvS1zLTtiykXe5h60";
-  static final String token = "Bearer ...";
+  static final String token = "Bearer BQDhI2gIy9YSDnAEGC-q0YxgWZF6cmrK041W6tQuUooLmKcq7DL5zulOmWxawAZrYL6v73O7oGDGQT3k9-A";
 
   static Future<dynamic> getAlbums() async {
     final response = await client.get("$baseUrl/$browse",
